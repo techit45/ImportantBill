@@ -1970,9 +1970,10 @@
             }
             
             // ตรวจสอบว่าคนนี้ส่งแล้วหรือยัง
-            const alreadySubmitted = submittedUsers.some(user => user.name === userName);
+            const existingUserIndex = submittedUsers.findIndex(user => user.name === userName);
             
-            if (!alreadySubmitted) {
+            if (existingUserIndex === -1) {
+                // ยังไม่มีผู้ใช้คนนี้ - เพิ่มใหม่
                 const submissionRecord = {
                     name: userName,
                     recipientName: recipientName,
@@ -1982,15 +1983,23 @@
                 };
                 
                 submittedUsers.push(submissionRecord);
-                
-                // บันทึกลง localStorage
-                saveSubmittedUsers();
-                
-                // อัปเดต sidebar
-                updateSidebar();
-                
                 console.log(`✅ เพิ่ม ${userName} ในรายการผู้ส่งสลิปแล้ว`);
+            } else {
+                // มีผู้ใช้คนนี้แล้ว - อัปเดตข้อมูลเท่านั้น (สำหรับกรณีส่งหลายไฟล์)
+                if (submissionData && submissionData.isMultipleFiles && submissionData.allOCRResults) {
+                    submittedUsers[existingUserIndex].submissionData = submissionData;
+                    console.log(`🔄 อัปเดตข้อมูล ${userName} สำหรับการส่งหลายไฟล์`);
+                } else {
+                    console.log(`ℹ️ ${userName} มีในรายการอยู่แล้ว - ข้าม`);
+                    return; // ออกจากฟังก์ชันไม่ต้องอัปเดต sidebar
+                }
             }
+            
+            // บันทึกลง localStorage
+            saveSubmittedUsers();
+            
+            // อัปเดต sidebar
+            updateSidebar();
         }
 
         function getTimeAgo(date) {
