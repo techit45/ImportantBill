@@ -3388,13 +3388,18 @@
             // แสดงข้อมูลใน console สำหรับการ debug
             console.log('ข้อมูลที่จะส่ง:', submitData);
             
-            const response = await fetch('http://localhost:5678/webhook/payment-process', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(submitData)
-            });
+            // GitHub Pages deployment - webhook disabled
+            console.log('📤 ข้อมูลที่จะส่ง (webhook disabled):', submitData);
+            
+            // Simulate successful response for GitHub Pages
+            const response = {
+                ok: true,
+                json: async () => ({ 
+                    success: true, 
+                    message: 'ข้อมูลได้รับการบันทึกเรียบร้อย (โหมดสาธิต)',
+                    data: submitData 
+                })
+            };
             
             showProgress(75);
             
@@ -3473,13 +3478,18 @@
                     
                     console.log(`📤 ส่งไฟล์ที่ ${fileNumber}/${totalFiles}:`, singleFileData);
                     
-                    const response = await fetch('http://localhost:5678/webhook/payment-process', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(singleFileData)
-                    });
+                    // GitHub Pages deployment - webhook disabled
+                    console.log(`📤 ไฟล์ที่ ${fileNumber}/${totalFiles} (webhook disabled):`, singleFileData);
+                    
+                    // Simulate successful response for GitHub Pages
+                    const response = {
+                        ok: true,
+                        json: async () => ({ 
+                            success: true, 
+                            message: `ไฟล์ที่ ${fileNumber} ได้รับการบันทึกเรียบร้อย (โหมดสาธิต)`,
+                            data: singleFileData 
+                        })
+                    };
                     
                     if (response.ok) {
                         const result = await response.json();
